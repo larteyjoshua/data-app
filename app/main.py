@@ -1,8 +1,10 @@
 from fastapi import FastAPI
-from faker import Faker
 from fastapi.middleware.cors import CORSMiddleware
 from app import model
 from typing import List
+from fastapi import FastAPI, HTTPException
+from app.generateAndCache import generateDataAndCache
+import random
 
 
 
@@ -17,36 +19,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-faker = Faker()
+
+@app.on_event("startup")
+async def startup_event():
+    generateDataAndCache()
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-@app.get('/getData', response_model=List[model.GenerateData])
+@app.get('/v1/accounts/all', response_model=List[model.GenerateData])
 async def generateData():
- data = []
- for _ in range(100):
-    name = faker.name()
-    job = faker.job()
-    phone_number = str(faker.phone_number())
-    company= faker.company()
-    account =  faker.credit_card_number()
-    swift = faker.swift(length=11, primary=True)
-    balance = faker.pricetag()
-    code =  faker.currency_code()
+    response = generateDataAndCache() 
+    return response
 
-    person = {
-        'name': name,
-        'job': job,
-        'number': phone_number,
-        'company': company,
-        'account': account,
-        'swift': swift,
-        'balance': balance,
-        'code': code
-
-    }
-    data.append(person)
-   
- return data
+@app.get('/v1/accounts/{total_number}', response_model=List[model.GenerateData])
+async def getDataFromCache(total_number:int):
+ if total_number > 0 and total_number < 2001:
+    data = generateDataAndCache()
+    response = random.sample(data, total_number)
+    return response
+ else:
+    raise HTTPException(status_code=418, detail="Enter a number between 0 and 2001")
