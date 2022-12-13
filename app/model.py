@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class GenerateData(BaseModel):
     name: str
     job: str
-    number: str
+    phone_number: str
     company: str
     account: str
     swift: str
