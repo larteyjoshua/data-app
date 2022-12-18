@@ -41,3 +41,14 @@ async def get_data_with_parameter(total_number:int):
     return response
  else:
     raise HTTPException(status_code=418, detail="Enter a number between 0 and 2001")
+
+#     {
+#         "name": "faker-data",
+#         "id": "e69d9dcd-1402-49f2-aa24-d6ee3eb31e21",
+#         "project": "a0kt1j9c",
+#         "runtime": "python3.9",
+#         "endpoint": "https://h0mdd0.deta.dev",
+#         "region": "eu-central-1",
+#         "visor": "disabled",
+#         "http_auth": "disabled"
+# }
